@@ -9,12 +9,11 @@ if (isset($_SESSION['login_user'])) {
 
 $ses_sql=mysqli_query($db,"select * from administrateur where email='$user_check' ");
 
-$row=mysqli_fetch_array($ses_sql,MYSQLI_ASSOC);
+$admin=mysqli_fetch_array($ses_sql,MYSQLI_ASSOC);
 
-$login_session=$row['email'];
+$login_session=$admin['email'];
 
-if(!isset($login_session))
-{
+if(!isset($login_session)) {
     header("Location: login.php");
 }
 ?>

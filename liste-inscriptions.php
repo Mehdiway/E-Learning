@@ -1,6 +1,8 @@
 <?php
   include('lock.php');
-  $nom_complet = $row['nom'] . " " . $row['prenom'];
+  $nom_complet = $admin['nom'] . " " . $admin['prenom'];
+
+  $apprenants = mysqli_query($db,"select * from apprenant");
 ?>
 <!DOCTYPE html>
 <!--
@@ -11,7 +13,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>AdminLTE 2 | Starter</title>
+    <title>EMSI E-Learning | Inscriptions</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <!-- Bootstrap 3.3.5 -->
@@ -39,36 +41,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <div class="wrapper">
 
       <!-- Main Header -->
-      <header class="main-header">
-
-        <!-- Logo -->
-        <a href="index2.html" class="logo">
-          <!-- mini logo for sidebar mini 50x50 pixels -->
-          <!-- logo for regular state and mobile devices -->
-          <span class="logo-lg"><b>E</b>-Learning</span>
-        </a>
-
-        <!-- Header Navbar -->
-        <nav class="navbar navbar-static-top" role="navigation">
-          <!-- Sidebar toggle button-->
-          <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
-            <span class="sr-only">Toggle navigation</span>
-          </a>
-          <!-- Navbar Right Menu -->
-          <div class="navbar-custom-menu">
-            <ul class="nav navbar-nav">
-              <!-- User Account Menu -->
-              <li class="dropdown user user-menu">
-                <!-- Menu Toggle Button -->
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                  <!-- hidden-xs hides the username on small devices so only the image appears. -->
-                  <span class="hidden-xs">Bonjour Mr <?= $nom_complet ?> !</span>
-                </a>
-              </li>
-            </ul>
-          </div>
-        </nav>
-      </header>
+      <?php include('header.php'); ?>
+      
       <!-- Left side column. contains the logo and sidebar -->
       <aside class="main-sidebar">
 
@@ -96,7 +70,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 <li><a href="ajouter-formation.php"><i class="fa fa-plus"></i> Ajouter une formation</a></li>
               </ul>
             </li>
-            <li><a href="liste-certificats.php"><i class="fa fa-certificate"></i> <span>Certificats de réussite</span></a></li>
+            <li><a href="liste-certificats.php"><i class="fa fa-certificate"></i> <span>Réussites</span></a></li>
           </ul><!-- /.sidebar-menu -->
         </section>
         <!-- /.sidebar -->
@@ -116,10 +90,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
               <h3 class="box-title">Liste des inscriptions</h3>
             </div>
             <div class="box-body">
-              <table class="table table-bordered table-hover dataTables">
+              <table class="table table-bordered table-striped table-hover dataTables">
                 <thead>
                   <tr>
-                    <th></th>
+                    <th>Validé</th>
                     <th>Nom</th>
                     <th>Prénom</th>
                     <th>Tél</th>
@@ -128,18 +102,42 @@ scratch. This page gets rid of all links and provides the needed markup only.
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>
-                      <input type="checkbox">
-                    </td>
-                    <td>Armachi</td>
-                    <td>Mehdi</td>
-                    <td>0666112233</td>
-                    <td>Hay El Fath, Rabat</td>
-                    <td>
-                      <a href="#" class="btn btn-sm btn-danger"><span class="fa fa-times"></span> Supprimer</a>
-                    </td>
-                  </tr>
+
+                  <?php
+                    while ($row = mysqli_fetch_array($apprenants)) {
+                      ?>
+                      <tr>
+                        <td>
+                          <?php
+                            if ($row["inscription_valide"] == 0) {
+                              ?>
+                              <span class="label label-default">En attente</span>
+                              <?php
+                            } else {
+                              ?>
+                              <span class="label label-success">Validé</span>
+                              <?php
+                            }
+                          ?>
+                        </td>
+                        <td><?= $row["nom"] ?></td>
+                        <td><?= $row["prenom"] ?></td>
+                        <td><?= $row["tel"] ?></td>
+                        <td><?= $row["adresse"] ?></td>
+                        <td>
+                          <?php
+                            if ($row["inscription_valide"] == 0) {
+                              ?>
+                              <a href="#" class="btn btn-primary btn-sm valider-inscription" data-id="<?= $row["id"] ?>"><span class="fa fa-check"></span> Valider</a>
+                              <?php
+                            }
+                          ?>
+                          <a href="#" class="btn btn-sm btn-danger supprimer-inscription" data-id="<?= $row["id"] ?>"><span class="fa fa-times"></span> Supprimer</a>
+                        </td>
+                      </tr>
+                      <?php
+                    }
+                  ?>
                 </tbody>
               </table>
             </div>
@@ -152,69 +150,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <!-- Default to the left -->
         <strong>Copyright &copy; 2015 EMSI E-Learning.</strong> Tous droits réservés.
       </footer>
-
-      <!-- Control Sidebar -->
-      <aside class="control-sidebar control-sidebar-dark">
-        <!-- Create the tabs -->
-        <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
-          <li class="active"><a href="#control-sidebar-home-tab" data-toggle="tab"><i class="fa fa-home"></i></a></li>
-          <li><a href="#control-sidebar-settings-tab" data-toggle="tab"><i class="fa fa-gears"></i></a></li>
-        </ul>
-        <!-- Tab panes -->
-        <div class="tab-content">
-          <!-- Home tab content -->
-          <div class="tab-pane active" id="control-sidebar-home-tab">
-            <h3 class="control-sidebar-heading">Recent Activity</h3>
-            <ul class="control-sidebar-menu">
-              <li>
-                <a href="javascript::;">
-                  <i class="menu-icon fa fa-birthday-cake bg-red"></i>
-                  <div class="menu-info">
-                    <h4 class="control-sidebar-subheading">Langdon's Birthday</h4>
-                    <p>Will be 23 on April 24th</p>
-                  </div>
-                </a>
-              </li>
-            </ul><!-- /.control-sidebar-menu -->
-
-            <h3 class="control-sidebar-heading">Tasks Progress</h3>
-            <ul class="control-sidebar-menu">
-              <li>
-                <a href="javascript::;">
-                  <h4 class="control-sidebar-subheading">
-                    Custom Template Design
-                    <span class="label label-danger pull-right">70%</span>
-                  </h4>
-                  <div class="progress progress-xxs">
-                    <div class="progress-bar progress-bar-danger" style="width: 70%"></div>
-                  </div>
-                </a>
-              </li>
-            </ul><!-- /.control-sidebar-menu -->
-
-          </div><!-- /.tab-pane -->
-          <!-- Stats tab content -->
-          <div class="tab-pane" id="control-sidebar-stats-tab">Stats Tab Content</div><!-- /.tab-pane -->
-          <!-- Settings tab content -->
-          <div class="tab-pane" id="control-sidebar-settings-tab">
-            <form method="post">
-              <h3 class="control-sidebar-heading">General Settings</h3>
-              <div class="form-group">
-                <label class="control-sidebar-subheading">
-                  Report panel usage
-                  <input type="checkbox" class="pull-right" checked>
-                </label>
-                <p>
-                  Some information about this general settings option
-                </p>
-              </div><!-- /.form-group -->
-            </form>
-          </div><!-- /.tab-pane -->
-        </div>
-      </aside><!-- /.control-sidebar -->
-      <!-- Add the sidebar's background. This div must be placed
-           immediately after the control sidebar -->
-      <div class="control-sidebar-bg"></div>
     </div><!-- ./wrapper -->
 
     <!-- REQUIRED JS SCRIPTS -->
@@ -226,10 +161,14 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- DataTables 1.10.7 -->
     <script type="text/javascript" src="plugins/datatables/jquery.dataTables.min.js"></script>
     <script type="text/javascript" src="plugins/datatables/dataTables.bootstrap.min.js"></script>
+    <script type="text/javascript" src="plugins/bootbox/bootbox.min.js"></script>
+
+    <script type="text/javascript" src="plugins/mustache.min.js"></script>
     <!-- AdminLTE App -->
     <script src="plugins/AdminLTE/js/app.min.js"></script>
 
     <script type="text/javascript" src="js/e-learning.js"></script>
+    <script type="text/javascript" src="js/controllers/ctrl-inscriptions.js"></script>
 
     <!-- Optionally, you can add Slimscroll and FastClick plugins.
          Both of these plugins are recommended to enhance the
