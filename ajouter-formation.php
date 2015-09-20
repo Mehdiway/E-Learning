@@ -4,7 +4,7 @@
   if($_SERVER["REQUEST_METHOD"] == "POST") {
       $query = "INSERT INTO Formation (titre, description, competences_requises, id_administrateur, id_formatteur) " .
               "VALUES ('" . $_POST["titre"] . "', '" . $_POST["description"] . "', '" . $_POST["competences"] . "', " . $admin["id"] . ", " . $_POST["formateur"] . ");";
-
+ 
       mysqli_query($db, $query);
       header("location: liste-formations.php");
   }
